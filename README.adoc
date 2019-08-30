@@ -1,3 +1,5 @@
+image:https://travis-ci.org/phughk/Blackjack-ML.svg?branch=master["Build Status", link="https://travis-ci.org/phughk/Blackjack-ML"]
+
 = Blackjack-ML
 
 A simulator for blackjack. Write bots, GUI's, stats, machine learning, distributed algos... Whatever
