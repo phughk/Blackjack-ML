@@ -3,3 +3,39 @@ image:https://travis-ci.org/phughk/Blackjack-ML.svg?branch=master["Build Status"
 = Blackjack-ML
 
 A simulator for blackjack. Write bots, GUI's, stats, machine learning, distributed algos... Whatever
+
+== Project in detail
+
+This is a game engine for the card game blackjack.
+The project doesn't currently support all the rules for blackjack and probably not all the edge cases either.
+For example, when a player's first card is an ace they can make side-bets - an aspect not supported in this engine.
+However, it is possible to extend this to support such functionality.
+
+That extendability is really the key idea behind this engine.
+
+The purpose of this project is to provide a solid core for which it is easy to interact with and do other cool stuff.
+By utilising the event listeners, your code can be notified of changes in the game and what options players have
+available to them.
+
+The project was initially created to have a go at doing some stats/ml work.
+Needless to say that isn't the limitation of how it can be used.
+Below you will find some examples for how you can apply it.
+
+== Example ideas
+
+1. Designing a GUI with animations
+1. Performing statistical analysis and machine learning
+1. Modifying the game by adding mechanics that are tied to blackjack, but not part of it. The "Ace sidebet" is one
+example, another would be the possibility to bet on players.
+1. Writing bots
+1. Writing a cluster of bots to coordinate a game
+1. Providing blackjack via different services. If you want to play around with some technology, you can use this
+engine as your domain.
+
+== FAQ
+
+*Q: There are many game engines on the internet that are more supported. Why use this?*
+
+A: Because it should be simple to use (i.e. because you don't have many options in a game) and that allows you to
+focus on whatever your primary goal is.
+
