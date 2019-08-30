@@ -27,4 +27,16 @@ public class Card implements Comparable<Card> {
   public String toString() {
     return String.format( "%s of %s", value, colour );
   }
+
+  @Override
+  public boolean equals( Object o ) {
+    if ( o == null ) {
+      return false;
+    }
+    if ( o instanceof Card ) {
+      Card card = (Card) o;
+      return card.value.equals( this.value ) && card.colour.equals( this.colour );
+    }
+    return super.equals( o );
+  }
 }
