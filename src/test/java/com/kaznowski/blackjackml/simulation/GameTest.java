@@ -12,11 +12,12 @@ import static com.kaznowski.blackjackml.helpers.TestHelpers.card;
 class GameTest {
   @Test
   void dealerCanBlackjack() {
+    // given a predictable game with only the dealer picking up 3 cards
     Game game = new Game(
         new PriorityShuffleMechanism( card( CardValue.SEVEN ), card( CardValue.SIX ), card( CardValue.EIGHT ),
             card( CardValue.FOUR ) ) );
 
-    // then fail if the dealer goes beyond blackjack
+    // then fail if the dealer goes beyond blackjack (3 cards)
     game.addGameEventHandler( new GameEventHandlerAdapter() {
       @Override
       public void dealtCardToDealer( Dealer dealer, Card card ) {

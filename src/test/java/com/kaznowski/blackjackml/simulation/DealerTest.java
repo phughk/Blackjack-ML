@@ -19,7 +19,7 @@ class DealerTest {
     dealer.deal( card( CardValue.KING ) );
 
     // then dealer would stop drawing cards
-    assertFalse( dealer.isBelowRuleMinimum( MIN, MAX ) );
+    assertFalse( dealer.shouldPickUpCard( MIN, MAX ) );
   }
 
   @Test
@@ -30,7 +30,7 @@ class DealerTest {
     dealer.deal( card( CardValue.JACK ) );
 
     // then we would draw another card
-    assertTrue( dealer.isBelowRuleMinimum( MIN, MAX ) );
+    assertTrue( dealer.shouldPickUpCard( MIN, MAX ) );
   }
 
   @Test
@@ -41,7 +41,7 @@ class DealerTest {
     dealer.deal( card( CardValue.SIX ) );
 
     // then we would stop drawing
-    assertFalse( dealer.isBelowRuleMinimum( MIN, MAX ) );
+    assertFalse( dealer.shouldPickUpCard( MIN, MAX ) );
   }
 
   @Test
@@ -52,14 +52,14 @@ class DealerTest {
     dealer.deal( card( CardValue.ACE ) );
 
     // then we are below the legal minimum and can still draw
-    assertTrue( dealer.isBelowRuleMinimum( MIN, MAX ) );
+    assertTrue( dealer.shouldPickUpCard( MIN, MAX ) );
   }
 
   @Test
-  void blackjackIsNotBelowMinimum() {
+  void blackjackShouldNotPickUpCard() {
     Dealer dealer = new Dealer( "dealer" );
     dealer.deal( card( CardValue.ACE) );
     dealer.deal( card( CardValue.KING ) );
-    assertFalse( dealer.isBelowRuleMinimum( MIN, MAX ) );
+    assertFalse( dealer.shouldPickUpCard( MIN, MAX ) );
   }
 }

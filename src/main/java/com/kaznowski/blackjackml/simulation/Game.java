@@ -102,7 +102,7 @@ public class Game implements Runnable, GameEventHandlerCollection {
 
   private void simulateDealer() {
     // TODO game event handler reveal dealer face down card
-    while ( dealer.isBelowRuleMinimum( DEALER_LOW, BLACKJACK ) ) {
+    while ( dealer.shouldPickUpCard( DEALER_LOW, BLACKJACK ) ) {
       Card card = deck.pullCard();
       dealer.deal( card );
       gameEventHandlers.dealtCardToDealer( dealer, card );
