@@ -45,4 +45,8 @@ public class Hand {
     return scores.stream().mapToInt( i -> i ).filter( i -> i <= blackjack ).max();
   }
 
+  public int getHighestUnboundeScore() {
+    return unfilteredScoresFromCombinations().stream().mapToInt( i->i ).max().orElse( 0 );
+  }
+
 }

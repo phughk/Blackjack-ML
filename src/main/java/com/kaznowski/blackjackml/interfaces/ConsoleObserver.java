@@ -10,11 +10,9 @@ import java.io.PrintStream;
 
 public class ConsoleObserver implements GameEventHandler {
   private final PrintStream printStream;
-  private final int blackjack;
 
-  public ConsoleObserver( PrintStream printStream, int blackjack ) {
+  public ConsoleObserver( PrintStream printStream ) {
     this.printStream = printStream;
-    this.blackjack = blackjack;
   }
 
   @Override
@@ -26,13 +24,13 @@ public class ConsoleObserver implements GameEventHandler {
   @Override
   public void dealtCardToPlayer( Player player, Card card ) {
     printStream.printf( "Player %s was dealt card %s. Their score is now %d\n", player, card,
-        player.getHand().getHighestScore( blackjack ).getAsInt() );
+        player.getHand().getHighestUnboundeScore() );
   }
 
   @Override
   public void dealtCardToDealer( Dealer dealer, Card card ) {
     printStream.printf( "Dealer %s was dealt card %s. Their score is now %d\n", dealer, card,
-        dealer.getHand().getHighestScore( blackjack ).getAsInt() );
+        dealer.getHand().getHighestUnboundeScore() );
   }
 
   @Override
@@ -52,7 +50,8 @@ public class ConsoleObserver implements GameEventHandler {
 
   @Override
   public void playerDoubles( Player player, Card card ) {
-    printStream.printf( "Player %s doubled and drew %s\n", player, card );
+    printStream.printf( "Player %s doubled and drew %s. Their score is now %d\n", player, card,
+        player.getHand().getHighestUnboundeScore() );
   }
 
   @Override

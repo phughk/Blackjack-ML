@@ -31,7 +31,7 @@ public class Game implements Runnable, GameEventHandlerCollection {
     this( DEALER_LOW, BLACKJACK, shuffleMechanism, players );
   }
 
-  public Game( int dealerLow, int blackjack, ShuffleMechanism shuffleMechanism, Player... players ) {
+  Game( int dealerLow, int blackjack, ShuffleMechanism shuffleMechanism, Player... players ) {
     dealer = new Dealer( "Dealer" );
     this.players = Arrays.asList( players );
     deck = new Deck( shuffleMechanism );

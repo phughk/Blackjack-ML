@@ -1,5 +1,6 @@
 package com.kaznowski.blackjackml.domain;
 
+import com.kaznowski.blackjackml.helpers.ArtificialPlayerChoices;
 import com.kaznowski.blackjackml.simulation.Player;
 import org.junit.jupiter.api.Test;
 
@@ -13,7 +14,7 @@ class PlayerTest {
 
   @Test
   void trivialHighestValue() {
-    Player player = new Player( "Player" );
+    Player player = new Player( "Player", new ArtificialPlayerChoices.Throwing() );
     player.deal( card( CardValue.KING ) );
     player.deal( card( CardValue.QUEEN ) );
 
@@ -26,7 +27,7 @@ class PlayerTest {
 
   @Test
   void aceTreatedLowWhenOver() {
-    Player player = new Player( "Player" );
+    Player player = new Player( "Player", new ArtificialPlayerChoices.Throwing() );
     player.deal( card( CardValue.ACE ) );
     player.deal( card( CardValue.NINE ) );
     player.deal( card( CardValue.FOUR ) );
