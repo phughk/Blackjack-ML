@@ -1,2 +1,3 @@
-# Blackjack-ML
+= Blackjack-ML
+
 A simulator for blackjack. Write bots, GUI's, stats, machine learning, distributed algos... Whatever
