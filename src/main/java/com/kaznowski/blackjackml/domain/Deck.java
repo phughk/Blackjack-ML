@@ -1,13 +1,16 @@
 package com.kaznowski.blackjackml.domain;
 
+import com.kaznowski.blackjackml.interfaces.ShuffleMechanism;
+
 import java.util.ArrayList;
-import java.util.Collections;
 import java.util.List;
 
 public class Deck {
+  private final ShuffleMechanism shuffleMechanism;
   private final List<Card> cards = new ArrayList<>();
 
-  public Deck() {
+  public Deck( ShuffleMechanism shuffleMechanism ) {
+    this.shuffleMechanism = shuffleMechanism;
     for ( CardColour cardColour : CardColour.values() ) {
       for ( CardValue cardValue : CardValue.values() ) {
         cards.add( new Card( cardValue, cardColour ) );
@@ -16,7 +19,7 @@ public class Deck {
   }
 
   public void shuffle() {
-    Collections.shuffle( cards );
+    shuffleMechanism.shuffle( cards );
   }
 
   @Override

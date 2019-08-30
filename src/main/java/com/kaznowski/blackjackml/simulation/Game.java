@@ -1,73 +1,98 @@
 package com.kaznowski.blackjackml.simulation;
 
+import com.kaznowski.blackjackml.domain.Card;
 import com.kaznowski.blackjackml.domain.Deck;
+import com.kaznowski.blackjackml.interfaces.GameEventHandler;
+import com.kaznowski.blackjackml.interfaces.GameEventHandlerCollection;
+import com.kaznowski.blackjackml.interfaces.GameEventHandlerMulticast;
+import com.kaznowski.blackjackml.interfaces.ShuffleMechanism;
 
-import java.util.ArrayList;
-import java.util.HashSet;
+import java.util.Arrays;
 import java.util.List;
-import java.util.Set;
 
 import static com.kaznowski.blackjackml.simulation.PlayerChoice.DOUBLE;
 import static com.kaznowski.blackjackml.simulation.PlayerChoice.HITME;
 import static com.kaznowski.blackjackml.simulation.PlayerChoice.STAY;
 
-public class Game implements Runnable {
+public class Game implements Runnable, GameEventHandlerCollection {
   private static final int BLACKJACK = 21;
   private static final int DEALER_LOW = 17;
 
   private final Deck deck;
   private final Dealer dealer;
   private final List<Player> players;
-  private final Set<Player> doubledPlayers;
+  private final GameEventHandlerMulticast gameEventHandlers;
 
-  public Game( int numberPlayers ) {
-    dealer = new Dealer();
-    doubledPlayers = new HashSet<>();
-    players = new ArrayList<>();
-    for ( int i = 0; i < numberPlayers; i++ ) {
-      players.add( new Player() );
-    }
-    deck = new Deck();
+  public Game( ShuffleMechanism shuffleMechanism, Player... players ) {
+    dealer = new Dealer("Dealer");
+    this.players = Arrays.asList( players );
+    deck = new Deck(shuffleMechanism);
+    gameEventHandlers = new GameEventHandlerMulticast();
   }
 
   @Override
   public void run() {
-    deck.shuffle();
+    deck.shuffle( );
+    gameEventHandlers.shuffledDeck( deck );
     dealCardsToEveryone();
     for ( Player player : players ) {
       simulatePlayer( player );
     }
     simulateDealer();
+    calculateScores();
+    gameEventHandlers.gameEnded();
+  }
+
+  private void calculateScores() {
+    int dealerScore = dealer.getScore( BLACKJACK );
+    gameEventHandlers.playerScore( dealer, dealerScore );
     for ( Player player : players ) {
-      calculateScore( player );
+      int playerScore = player.getScore( BLACKJACK );
+      gameEventHandlers.playerScore( player, playerScore );
+      // TODO logic if disqualified etc
+      if ( playerScore > dealerScore ) {
+        gameEventHandlers.playerWon( player ); // TODO Scores?
+      }
+      else if ( playerScore == dealerScore ) {
+        gameEventHandlers.playerDrew( player );
+      }
+      else {
+        gameEventHandlers.playerLost( player );
+      }
     }
   }
 
-  private void calculateScore( Player player ) {
-    throw new UnsupportedOperationException();
-  }
-
   private void simulatePlayer( Player player ) {
+    gameEventHandlers.startedTurnPlayer( player );
     PlayerChoice choice = player.giveChoices( STAY, HITME, DOUBLE );
+    gameEventHandlers.playerChose( player, choice );
     if ( choice == STAY ) {
       return;
     }
     if ( choice == DOUBLE ) {
-      doubledPlayers.add( player );
+      Card card = deck.pullCard();
+      player.deal( card );
+      gameEventHandlers.playerDoubles( player, card );
     }
     else if ( choice == HITME ) {
-      player.deal( deck.pullCard() );
+      Card card = deck.pullCard();
+      player.deal( card );
+      gameEventHandlers.dealtCardToPlayer( player, card );
     }
-    else {
+    else { // TODO game event handler for failure?
       throw new IllegalStateException( "Unknown state " + choice );
     }
+    // TODO game event handler for blackjack?
     while ( player.getHand().getLowestTotal() <= BLACKJACK ) { // and they havent stopped
       choice = player.giveChoices( STAY, HITME );
+      gameEventHandlers.playerChose( player, choice );
       if ( choice == STAY ) {
         return;
       }
       if ( choice == HITME ) {
-        player.deal( deck.pullCard() );
+        Card card = deck.pullCard();
+        player.deal( card );
+        gameEventHandlers.dealtCardToPlayer( player, card );
       }
       else {
         throw new IllegalStateException( "Unknown state " + choice );
@@ -76,8 +101,11 @@ public class Game implements Runnable {
   }
 
   private void simulateDealer() {
+    // TODO game event handler reveal dealer face down card
     while ( dealer.isBelowRuleMinimum( DEALER_LOW, BLACKJACK ) ) {
-      dealer.deal( deck.pullCard() );
+      Card card = deck.pullCard();
+      dealer.deal( card );
+      gameEventHandlers.dealtCardToDealer( dealer, card );
     }
   }
 
@@ -88,8 +116,22 @@ public class Game implements Runnable {
 
   private void roundRobin() {
     for ( Player player : players ) {
-      player.deal( deck.pullCard() );
+      Card card = deck.pullCard();
+      player.deal( card );
+      gameEventHandlers.dealtCardToPlayer( player, card );
     }
-    dealer.deal( deck.pullCard() );
+    Card card = deck.pullCard();
+    dealer.deal( card );
+    gameEventHandlers.dealtCardToDealer( dealer, card );
+  }
+
+  @Override
+  public void addGameEventHandler( GameEventHandler gameEventHandler ) {
+    gameEventHandlers.addGameEventHandler( gameEventHandler );
+  }
+
+  @Override
+  public void removeGameEventHandler( GameEventHandler gameEventHandler ) {
+    gameEventHandlers.addGameEventHandler( gameEventHandler );
   }
 }
