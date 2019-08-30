@@ -23,10 +23,6 @@ public class Player {
     return choices[0];
   }
 
-  public int getScore( int blackjack ) {
-    return hand.potentialScores().stream().mapToInt( i -> i ).filter( i -> i < blackjack ).max().orElse( 0 );
-  }
-
   @Override
   public String toString() {
     return alias;

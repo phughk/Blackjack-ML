@@ -14,7 +14,7 @@ public class Dealer extends Player {
     // https://boardgames.stackexchange.com/questions/35613/if-dealer-is-dealt-an-ace-and-then-dealt-another-card-will-he-bust
 
     Set<Integer> removedBustedHands =
-        getHand().potentialScores().stream().filter( i -> i <= blackjack ).collect( Collectors.toSet() );
+        getHand().unfilteredScoresFromCombinations().stream().filter( i -> i <= blackjack ).collect( Collectors.toSet() );
     OptionalInt highestValue = removedBustedHands.stream().mapToInt( i -> i ).max();
     if ( !highestValue.isPresent() ) {
       // we either busted or we don't have cards.

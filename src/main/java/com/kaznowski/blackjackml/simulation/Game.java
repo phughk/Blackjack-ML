@@ -9,30 +9,40 @@ import com.kaznowski.blackjackml.interfaces.ShuffleMechanism;
 
 import java.util.Arrays;
 import java.util.List;
+import java.util.OptionalInt;
 
 import static com.kaznowski.blackjackml.simulation.PlayerChoice.DOUBLE;
 import static com.kaznowski.blackjackml.simulation.PlayerChoice.HITME;
 import static com.kaznowski.blackjackml.simulation.PlayerChoice.STAY;
 
 public class Game implements Runnable, GameEventHandlerCollection {
-  private static final int BLACKJACK = 21;
-  private static final int DEALER_LOW = 17;
+  public static final int BLACKJACK = 21;
+  public static final int DEALER_LOW = 17;
 
   private final Deck deck;
   private final Dealer dealer;
   private final List<Player> players;
   private final GameEventHandlerMulticast gameEventHandlers;
 
+  private final int dealerLow;
+  private final int blackjack;
+
   public Game( ShuffleMechanism shuffleMechanism, Player... players ) {
-    dealer = new Dealer("Dealer");
+    this( DEALER_LOW, BLACKJACK, shuffleMechanism, players );
+  }
+
+  public Game( int dealerLow, int blackjack, ShuffleMechanism shuffleMechanism, Player... players ) {
+    dealer = new Dealer( "Dealer" );
     this.players = Arrays.asList( players );
-    deck = new Deck(shuffleMechanism);
+    deck = new Deck( shuffleMechanism );
     gameEventHandlers = new GameEventHandlerMulticast();
+    this.blackjack = blackjack;
+    this.dealerLow = dealerLow;
   }
 
   @Override
   public void run() {
-    deck.shuffle( );
+    deck.shuffle();
     gameEventHandlers.shuffledDeck( deck );
     dealCardsToEveryone();
     for ( Player player : players ) {
@@ -44,13 +54,13 @@ public class Game implements Runnable, GameEventHandlerCollection {
   }
 
   private void calculateScores() {
-    int dealerScore = dealer.getScore( BLACKJACK );
-    gameEventHandlers.playerScore( dealer, dealerScore );
+    OptionalInt dealerScore = dealer.getHand().getHighestScore( blackjack );
+    gameEventHandlers.playerScore( dealer, dealerScore.getAsInt() );
     for ( Player player : players ) {
-      int playerScore = player.getScore( BLACKJACK );
-      gameEventHandlers.playerScore( player, playerScore );
+      OptionalInt playerScore = player.getHand().getHighestScore( blackjack );
+      gameEventHandlers.playerScore( player, playerScore.getAsInt() );
       // TODO logic if disqualified etc
-      if ( playerScore > dealerScore ) {
+      if ( playerScore.getAsInt() > dealerScore.getAsInt() ) {
         gameEventHandlers.playerWon( player ); // TODO Scores?
       }
       else if ( playerScore == dealerScore ) {
@@ -83,7 +93,7 @@ public class Game implements Runnable, GameEventHandlerCollection {
       throw new IllegalStateException( "Unknown state " + choice );
     }
     // TODO game event handler for blackjack?
-    while ( player.getHand().getLowestTotal() <= BLACKJACK ) { // and they havent stopped
+    while ( player.getHand().getLowestScore() <= blackjack) { // and they havent stopped
       choice = player.giveChoices( STAY, HITME );
       gameEventHandlers.playerChose( player, choice );
       if ( choice == STAY ) {
@@ -102,7 +112,7 @@ public class Game implements Runnable, GameEventHandlerCollection {
 
   private void simulateDealer() {
     // TODO game event handler reveal dealer face down card
-    while ( dealer.shouldPickUpCard( DEALER_LOW, BLACKJACK ) ) {
+    while ( dealer.shouldPickUpCard( dealerLow, blackjack) ) {
       Card card = deck.pullCard();
       dealer.deal( card );
       gameEventHandlers.dealtCardToDealer( dealer, card );

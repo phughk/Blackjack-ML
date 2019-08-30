@@ -18,7 +18,7 @@ class HandTest {
     hand.addCard( card( CardValue.KING ) );
 
     // when
-    Set<Integer> scores = hand.potentialScores();
+    Set<Integer> scores = hand.unfilteredScoresFromCombinations();
 
     // then
     assertEquals( set( 14 ), scores );
@@ -33,7 +33,7 @@ class HandTest {
     hand.addCard( card( CardValue.SIX ) );
 
     // when
-    Set<Integer> scores = hand.potentialScores();
+    Set<Integer> scores = hand.unfilteredScoresFromCombinations();
 
     // then
     assertEquals( scores, set( 11, 21, 31 ) );
